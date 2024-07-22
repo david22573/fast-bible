@@ -1,8 +1,8 @@
 from fastapi import FastAPI
+from .routers import routers
+
 
 app = FastAPI()
 
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+for router in routers:
+    app.include_router(router)
