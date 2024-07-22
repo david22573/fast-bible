@@ -1,10 +1,10 @@
 CREATE TABLE
-    IF NOT EXISTS BibleVersion (id INTEGER PRIMARY KEY, name TEXT);
+    IF NOT EXISTS BibleVersion (id INTEGER PRIMARY KEY, bible_version TEXT);
 
 CREATE TABLE
     IF NOT EXISTS Testament (
         id INTEGER PRIMARY KEY,
-        name TEXT,
+        testament_name TEXT,
         bible_version_id INTEGER,
         FOREIGN KEY (bible_version_id) REFERENCES BibleVersion (id)
     );

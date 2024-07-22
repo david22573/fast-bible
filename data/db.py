@@ -1,11 +1,18 @@
 import sqlite3
 from contextlib import contextmanager
+from collections import namedtuple
+
+
+def namedtuple_factory(cursor, row):
+    fields = [column[0] for column in cursor.description]
+    cls = namedtuple("Row", fields)
+    return cls._make(row)
 
 
 @contextmanager
 def get_db():
     conn = sqlite3.connect("data/bible.db")
-    conn.row_factory = sqlite3.Row
+    conn.row_factory = namedtuple_factory
     try:
         yield conn
     finally:
