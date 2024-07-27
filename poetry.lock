@@ -709,6 +709,16 @@ files = [
 windows-terminal = ["colorama (>=0.4.6)"]
 
 [[package]]
+name = "pyperclip"
+version = "1.9.0"
+description = "A cross-platform clipboard module for Python. (Only handles plain text for now.)"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pyperclip-1.9.0.tar.gz", hash = "sha256:b7de0142ddc81bfc5c7507eea19da920b92252b548b96186caf94a5e2527d310"},
+]
+
+[[package]]
 name = "python-dotenv"
 version = "1.0.1"
 description = "Read key-value pairs from a .env file and set them as environment variables"
@@ -1257,4 +1267,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "64f2d6b3813066c0795c182b8b49c874f2bc5f868f6ccfe4b7513957864ba4be"
+content-hash = "f1edcf129cf3a9d867f8ae917be99c7e1155d2888f5440069bbd6185cb466ef4"

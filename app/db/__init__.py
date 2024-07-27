@@ -2,26 +2,26 @@ from typing import List
 from sqlalchemy import create_engine, ForeignKey, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-engine = create_engine("sqlite:///data/bible.db", echo=True)
+engine = create_engine("sqlite:///data/bible/bible.db", echo=True)
 
 
 class Base(DeclarativeBase):
     pass
 
 
-class Testaments(Base):
+class Testament(Base):
     __tablename__ = "testament"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(255))
 
-    books: Mapped[List["Books"]] = relationship(back_populates="testament")
+    books: Mapped[List["Book"]] = relationship(back_populates="testament")
 
     def __repr__(self):
         return f"<Testament(id={self.id}, name={self.name})>"
 
 
-class Books(Base):
+class Book(Base):
     __tablename__ = "book"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -29,9 +29,9 @@ class Books(Base):
     chapter_count: Mapped[int] = mapped_column()
 
     testament_id: Mapped[int] = mapped_column(ForeignKey("testament.id"))
-    testament: Mapped["Testaments"] = relationship(back_populates="books")
+    testament: Mapped["Testament"] = relationship(back_populates="books")
 
-    chapters: Mapped[List["Verse"]] = relationship(back_populates="book")
+    chapters: Mapped[List["Chapter"]] = relationship(back_populates="book")
 
     def __repr__(self):
         return f"<Book(id={self.id}, name={self.name}, chapters={self.chapters})>"
@@ -44,7 +44,7 @@ class Chapter(Base):
     number: Mapped[int] = mapped_column()
 
     book_id: Mapped[int] = mapped_column(ForeignKey("book.id"))
-    book: Mapped["Books"] = relationship(back_populates="chapters")
+    book: Mapped["Book"] = relationship(back_populates="chapters")
 
     verses: Mapped[List["Verse"]] = relationship(back_populates="chapter")
 
@@ -57,6 +57,8 @@ class Verse(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     verse_num: Mapped[int] = mapped_column()
+    verse_text: Mapped[str] = mapped_column(String(255))
+
     chapter_id: Mapped[int] = mapped_column(ForeignKey("chapter.id"))
     chapter: Mapped["Chapter"] = relationship(back_populates="verses")
 
