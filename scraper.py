@@ -6,6 +6,7 @@ import json
 
 import re
 
+from app.db import Testament, Book, Chapter, Verse
 from app.db.bible import BibleDB
 
 bible_db = BibleDB()
@@ -51,26 +52,54 @@ def clean_passage(passage):
             new_passage.append(p + "\n")
         else:
             new_passage.append(p)
-    return ("".join(new_passage)).split("\n")
+    new_passage = "".join(new_passage)
+    return new_passage
+
+
+def add_verses(verses, book_id, chapter_id):
+    verses = [
+        Verse(
+            number=i,
+            text=verses[i - 1],
+            chapter_id=chapter_id,
+            book_id=book_id,
+        )
+        for i in range(1, len(verses) + 1)
+    ]
+    bible_db.session.add_all(verses)
+    bible_db.session.commit()
 
 
 def scrape_books():
     bible_structure = json.load(open("data/bible/books.json"))
 
     for testament in bible_structure["bible"]["testaments"]:
+        testament_db = Testament(name=testament["name"])
+        bible_db.session.add(testament_db)
+        bible_db.session.commit()
         for book in testament["books"]:
+            book_db = Book(
+                name=book["name"],
+                testament_id=testament_db.id,
+                chapter_count=book["chapters"],
+            )
+            bible_db.session.add(book_db)
+            bible_db.session.commit()
             for chapter in range(1, book["chapters"] + 1):
                 passage = scrape_content(book["name"], chapter)
-                print(clean_passage(passage))
+                passage = clean_passage(passage)
+                verses = [v for v in passage.split("\n") if v[0].isdigit()]
+                chapter_db = Chapter(number=chapter, text=passage, book_id=book_db.id)
+                bible_db.session.add(chapter_db)
+                bible_db.session.commit()
+                add_verses(verses, book_db.id, chapter_db.id)
                 time.sleep(5)  # Additional delay between chapters
 
             time.sleep(10)  # Additional delay between books
 
 
 def main():
-    with open("test.html", "rb") as content:
-        passage = "".join(scrape_content("Mark", 1, content))
-        print(len([p for p in passage.split("\n") if p and not p[0].isdigit()]))
+    scrape_books()
 
 
 if __name__ == "__main__":
