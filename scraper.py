@@ -52,7 +52,7 @@ def clean_passage(passage):
             new_passage.append(p + "\n")
         else:
             new_passage.append(p)
-    new_passage = "".join(new_passage)
+    new_passage = "\n".join([p for p in "".join(new_passage).split("\n") if p])
     return new_passage
 
 
@@ -88,6 +88,7 @@ def scrape_books():
             for chapter in range(1, book["chapters"] + 1):
                 passage = scrape_content(book["name"], chapter)
                 passage = clean_passage(passage)
+                print(passage)
                 verses = [v for v in passage.split("\n") if v[0].isdigit()]
                 chapter_db = Chapter(number=chapter, text=passage, book_id=book_db.id)
                 bible_db.session.add(chapter_db)
