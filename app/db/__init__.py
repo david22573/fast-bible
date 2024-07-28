@@ -47,6 +47,10 @@ class Chapter(Base):
     book: Mapped["Book"] = relationship(back_populates="chapters")
 
     verses: Mapped[List["Verse"]] = relationship(back_populates="chapter")
+    cross_references: Mapped[List["CrossReference"]] = relationship(
+        back_populates="chapter"
+    )
+    footnotes = relationship("Footnote", back_populates="chapter")
 
     def __repr__(self):
         return f"<Chapter(id={self.id}, number={self.number})>"
@@ -64,6 +68,32 @@ class Verse(Base):
 
     def __repr__(self):
         return f"<Verse(id={self.id}, verse_num={self.verse_num})>"
+
+
+class CrossReference(Base):
+    __tablename__ = "cross_reference"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    reference: Mapped[str] = mapped_column(String(255))
+
+    chapter_id: Mapped[int] = mapped_column(ForeignKey("chapter.id"))
+    chapter: Mapped["Chapter"] = relationship(back_populates="cross_references")
+
+    def __repr__(self):
+        return f"<Verse(id={self.id}, verse_num={self.reference})>"
+
+
+class Footnote(Base):
+    __tablename__ = "footnote"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    text: Mapped[str] = mapped_column(String(255))
+
+    Chapter_id: Mapped[int] = mapped_column(ForeignKey("chapter.id"))
+    Chapter: Mapped["Chapter"] = relationship(back_populates="footnotes")
+
+    def __repr__(self):
+        return f"<Footnote(id={self.id}, text={self.text})>"
 
 
 if __name__ == "__main__":

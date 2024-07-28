@@ -6,6 +6,10 @@ import json
 
 import re
 
+from app.db.bible import BibleDB
+
+bible_db = BibleDB()
+
 
 def get_page(url):
     session = requests.Session()
@@ -38,13 +42,26 @@ def scrape_content(book, chapter, content=None):
         return False
 
 
+def clean_passage(passage):
+    new_passage = []
+    for p in passage:
+        if p[0].isdigit():
+            new_passage.append("\n" + p)
+        elif p[-1] == "." or p[:-2] == '."':
+            new_passage.append(p + "\n")
+        else:
+            new_passage.append(p)
+    return ("".join(new_passage)).split("\n")
+
+
 def scrape_books():
     bible_structure = json.load(open("data/bible/books.json"))
 
     for testament in bible_structure["bible"]["testaments"]:
         for book in testament["books"]:
             for chapter in range(1, book["chapters"] + 1):
-                # verses = scrape_chapter(book["name"], chapter)
+                passage = scrape_content(book["name"], chapter)
+                print(clean_passage(passage))
                 time.sleep(5)  # Additional delay between chapters
 
             time.sleep(10)  # Additional delay between books
